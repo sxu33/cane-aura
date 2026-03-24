@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { EB_Garamond, Outfit, Geist } from "next/font/google";
+import { EB_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
 const ebGaramond = EB_Garamond({
   variable: "--font-serif",
@@ -9,7 +8,11 @@ const ebGaramond = EB_Garamond({
   display: "swap",
 });
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const outfit = Outfit({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", ebGaramond.variable, "font-sans", geist.variable)}
+      className={`${ebGaramond.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground">
         {children}
