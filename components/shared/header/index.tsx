@@ -1,8 +1,8 @@
-import { ShoppingCart, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+
 import { APP_NAME } from "@/lib/constants";
+import Menu from "./menu";
 
 const Header = () => {
   return (
@@ -22,22 +22,7 @@ const Header = () => {
             </span>
           </Link>
         </div>
-        <div className="flex-start gap-2">
-          <Button asChild variant="ghost" size="icon" className="relative">
-            <Link href="/cart" aria-label="Cart">
-              <ShoppingCart className="size-5"></ShoppingCart>
-              <span className="absolute min-w-4 h-4 px-1 rounded-full -top-1 -right-1 bg-primary text-primary-foreground text-[10px] leading-4 text-center">
-                0
-              </span>
-            </Link>
-          </Button>
-
-          <Button asChild variant="ghost" size="icon">
-            <Link href="/sign-in" aria-label="User account">
-              <UserIcon className="size-5"></UserIcon>
-            </Link>
-          </Button>
-        </div>
+        <Menu />
       </div>
     </header>
   );
