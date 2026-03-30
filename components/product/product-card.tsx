@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import ProductPrice from "./product-price";
 
 const ProductCard = ({ product }: { product: any }) => {
   return (
@@ -28,10 +29,8 @@ const ProductCard = ({ product }: { product: any }) => {
           </h3>
         </Link>
 
-        <div className="flex items-center justify-between mt-1">
-          <p className="font-sans text-base sm:text-lg text-primary tracking-wide">
-            ${product.price}
-          </p>
+        <div className="flex items-baseline justify-between mt-1">
+          <ProductPrice value={Number(product.price)} className={"text-primary"} />
 
           <div className="flex items-center gap-1 font-sans text-xs text-muted-foreground">
             <span className="text-accent">★</span>
