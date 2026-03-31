@@ -39,6 +39,7 @@
     "prettier": "^3.8.1",
     "prisma": "^7.6.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
