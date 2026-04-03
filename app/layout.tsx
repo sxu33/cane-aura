@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EB_Garamond, Outfit } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { APP_NAME, APP_DESCRIPTION, SERVER_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground">
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
