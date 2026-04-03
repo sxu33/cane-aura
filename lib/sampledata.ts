@@ -114,7 +114,10 @@ const sampleData = {
       category: "Decor",
       description:
         "Give your indoor plants a beautiful home. This woven rattan planter features sturdy wooden legs, shown alongside a stylish patterned tote bag.",
-      images: ["/images/products/plant-stand-1.jpg", "/images/plant-stand-2.jpg"],
+      images: [
+        "/images/products/plant-stand-1.jpg",
+        "/images/products/plant-stand-2.jpg",
+      ],
       price: "110.00",
       brand: "EcoWeave",
       rating: "4.7",
