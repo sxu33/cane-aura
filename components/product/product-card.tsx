@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProductPrice from "./product-price";
 import { Product } from "@/types";
+import { Star } from "lucide-react";
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
@@ -34,7 +35,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           <ProductPrice value={Number(product.price)} className={"text-primary"} />
 
           <div className="flex items-center gap-1 font-sans text-xs text-muted-foreground">
-            <span className="text-accent">★</span>
+            <Star size={14} className="fill-accent text-accent" />
             <span>{product.rating}</span>
             <span className="opacity-60">({product.numReviews})</span>
           </div>
