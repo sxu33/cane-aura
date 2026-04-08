@@ -6,9 +6,9 @@ import { compareSync } from "bcrypt-ts";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/sign-in",
 
-    error: "/auth/signin",
+    error: "/sign-in",
   },
 
   session: {
