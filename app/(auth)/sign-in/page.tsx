@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/card";
 import { APP_NAME } from "@/lib/constants";
 import SignInForm from "./sign-in-form";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Sign In",
 };
 
-export default function SignInPage() {
+export default async function SignInPage() {
   return (
     // Main container using your theme background
     <div className="min-h-screen w-full bg-background flex flex-col md:flex-row">
@@ -34,7 +35,7 @@ export default function SignInPage() {
 
       {/* Right: Auth Section */}
       <div className="w-full md:w-1/2 lg:w-2/5 flex-center p-6 md:p-12">
-        <div className="w-full max-w-[450px] space-y-6">
+        <div className="w-full max-w-[400px] space-y-6">
           {/* Brand Logo - Reusing flex-start & serif font */}
           <Link href="/" className="flex-start gap-3 group">
             <Image
@@ -74,14 +75,25 @@ export default function SignInPage() {
 
               {/* OAuth Providers */}
               <div className="grid grid-cols-2 gap-4 font-sans">
-                <button className="flex-center gap-2 rounded-xl border border-border py-3 text-sm font-medium transition-colors hover:bg-secondary">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-center gap-2 rounded-xl py-6"
+                  // onClick={() => signIn('google')}
+                >
                   <Image src="/google.svg" width={18} height={18} alt="Google" />
                   Google
-                </button>
-                <button className="flex-center gap-2 rounded-xl border border-border py-3 text-sm font-medium transition-colors hover:bg-secondary">
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-center gap-2 rounded-xl py-6"
+                  // onClick={() => signIn('apple')}
+                >
                   <Image src="/apple.svg" width={18} height={18} alt="Apple" />
                   Apple
-                </button>
+                </Button>
               </div>
             </CardContent>
           </Card>
