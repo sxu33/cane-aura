@@ -3,8 +3,18 @@ import { signInSchema } from "../validators";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 
+function safeCallbackUrl(value: FormDataEntryValue | null): string {
+  if (typeof value !== "string" || value.length === 0) return "/";
+  if (!value.startsWith("/") || value.startsWith("//")) return "/";
+  return value;
+}
+
 export async function SignInUser(_prev: unknown, formdata: FormData) {
   try {
+    // get redirect path with safe callbackUrl
+    console.log(formdata);
+    const redirectTo = safeCallbackUrl(formdata.get("callbackUrl"));
+
     //convert formdata into plain object
     const data = Object.fromEntries(formdata.entries());
 
@@ -18,7 +28,7 @@ export async function SignInUser(_prev: unknown, formdata: FormData) {
     await signIn("credentials", {
       email: result.data.email,
       password: result.data.password,
-      redirectTo: "/",
+      redirectTo,
     });
 
     //if success return success message
