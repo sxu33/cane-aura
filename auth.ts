@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts";
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
@@ -19,6 +20,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
 
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    }),
     CredentialsProvider({
       credentials: {
         email: { label: "email", type: "email" },
@@ -52,14 +57,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, user, trigger, token }) {
-      // Set the user ID from the token
-      if (token.sub) session.user.id = token.sub;
+    async jwt({ token, user }) {
+      //if user exists, set token sub to user id or remain
 
-      // If there is an update, set the user name
-      if (trigger === "update") {
-        session.user.name = user.name;
+      if (user) {
+        token.sub = user.id ?? token.sub;
       }
+      return token;
+    },
+
+    async session({ session, user, trigger, token }) {
+      // if token's sub exists, set the user ID in the session to the token's sub
+      if (token.sub) session.user.id = token.sub;
 
       return session;
     },
