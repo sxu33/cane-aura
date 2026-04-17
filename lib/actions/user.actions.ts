@@ -3,17 +3,16 @@ import { signInSchema } from "../validators";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
 
-function safeCallbackUrl(value: FormDataEntryValue | null): string {
-  if (typeof value !== "string" || value.length === 0) return "/";
-  if (!value.startsWith("/") || value.startsWith("//")) return "/";
-  return value;
-}
+import { getSafeCallbackUrl } from "../utils";
+import { redirect } from "next/dist/server/api-utils";
 
 export async function SignInUser(_prev: unknown, formdata: FormData) {
   try {
     // get redirect path with safe callbackUrl
-    console.log(formdata);
-    const redirectTo = safeCallbackUrl(formdata.get("callbackUrl"));
+    const rawCallback = formdata.get("callbackUrl");
+    const redirectTo = getSafeCallbackUrl(
+      typeof rawCallback === "string" ? rawCallback : null
+    );
 
     //convert formdata into plain object
     const data = Object.fromEntries(formdata.entries());
@@ -41,7 +40,19 @@ export async function SignInUser(_prev: unknown, formdata: FormData) {
   }
 }
 
+export async function signInWithGoogle(formData: FormData) {
+  try {
+    const rawCallback = formData.get("callbackUrl");
+    const redirectTo = getSafeCallbackUrl(
+      typeof rawCallback === "string" ? rawCallback : null
+    );
+    await signIn("google", { redirectTo });
+  } catch (error) {
+    throw error;
+  }
+}
+
 //Sign out user
 export async function SignoutUser() {
-  await signOut();
+  await signOut({ redirectTo: "/" });
 }
