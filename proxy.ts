@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
+import { getSafeCallbackUrl } from "./lib/utils";
 
 // Define route categories for access control
 const guestPaths = ["/sign-in", "/sign-up", "/forgot-password"];
@@ -30,7 +31,7 @@ export const proxy = auth((req) => {
   if (isLoggedIn && guestPaths.includes(pathname)) {
     console.log(pathname);
     // Resolve destination: prioritize callbackUrl or default to root
-    const callbackUrl = searchParams.get("callbackUrl") || "/";
+    const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl")) || "/";
     console.log(callbackUrl);
     return NextResponse.redirect(new URL(callbackUrl, req.nextUrl));
   }
@@ -48,5 +49,6 @@ export const config = {
     "/forgot-password",
     "/shipping/:path*",
     "/admin/:path*",
+    "/profile/:path*",
   ],
 };
