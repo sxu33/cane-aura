@@ -11,8 +11,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import UserButton from "./user-button";
+import type { Session } from "next-auth";
 
-const Menu = () => {
+const Menu = ({ session }: { session: Session | null }) => {
   return (
     <div className="flex justify-end gap-3">
       <nav className="hidden md:flex w-full max-w-xs gap-4">
@@ -25,11 +27,7 @@ const Menu = () => {
           </Link>
         </Button>
 
-        <Button asChild variant="ghost" size="icon">
-          <Link href="/sign-in" aria-label="User account">
-            <UserIcon className="size-5"></UserIcon>
-          </Link>
-        </Button>
+        <UserButton session={session} />
       </nav>
 
       <nav className="md:hidden">
@@ -53,11 +51,7 @@ const Menu = () => {
               </Link>
             </Button>
 
-            <Button asChild variant="ghost" size="icon">
-              <Link href="/sign-in" aria-label="User account">
-                <UserIcon className="size-5"></UserIcon>
-              </Link>
-            </Button>
+            <UserButton session={session} />
           </SheetContent>
         </Sheet>
       </nav>
