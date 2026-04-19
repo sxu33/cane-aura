@@ -93,6 +93,14 @@ export async function SignUpUser(_prev: unknown, formdata: FormData) {
   } catch (error) {
     //  throw error when successfully logged in
     unstable_rethrow(error);
+    //if error happens when auto logging in return error to indicate the user to login in manually
+    if (error instanceof AuthError) {
+      return {
+        success: false,
+        message:
+          "Account was created, but automatic sign-in failed. Please sign in with your email and password.",
+      };
+    }
     return { success: false, message: "Something went wrong" };
   }
 }

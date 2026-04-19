@@ -1,12 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { SignInUser } from "@/lib/actions/user.actions";
+import { SignUpUser } from "@/lib/actions/user.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormStatus } from "react-dom";
-import Link from "next/link";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -17,16 +16,28 @@ function SubmitButton() {
       type="submit"
       className="w-full rounded-xl py-6 font-bold shadow-lg shadow-primary/20"
     >
-      {pending ? "Signing In..." : "Sign In"}
+      {pending ? "Signing Up..." : "Sign Up"}
     </Button>
   );
 }
-const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
-  const [data, action] = useActionState(SignInUser, { success: false, message: "" });
+const SignUpForm = ({ callbackUrl }: { callbackUrl: string }) => {
+  const [data, action] = useActionState(SignUpUser, { success: false, message: "" });
 
   return (
     <form action={action} className="space-y-4">
-      <input type="hidden" name="callbackUrl" value={callbackUrl}></input>
+      <div className="space-y-2">
+        <Label htmlFor="name">Name</Label>
+        <input type="hidden" name="callbackUrl" value={callbackUrl}></input>
+        <Input
+          name="name"
+          id="name"
+          type="text"
+          autoComplete="name"
+          required
+          className="rounded-xl"
+        />
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="email">E-mail</Label>
 
@@ -43,18 +54,26 @@ const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
       <div className="space-y-4">
         <div className="flex justify-between">
           <Label htmlFor="password">Password</Label>
-          <Link
-            href="/forgot-password"
-            className="text-xs font-bold text-primary hover:underline"
-          >
-            Forgot Password?
-          </Link>
         </div>
         <Input
           name="password"
           id="password"
           type="password"
-          autoComplete="current-password"
+          autoComplete="new-password"
+          required
+          className="rounded-xl"
+        />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex justify-between">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+        </div>
+        <Input
+          name="confirmPassword"
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
           required
           className="rounded-xl"
         />
@@ -71,4 +90,4 @@ const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
   );
 };
 
-export default SignInForm;
+export default SignUpForm;
