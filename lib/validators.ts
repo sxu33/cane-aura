@@ -33,7 +33,7 @@ export const signInSchema = z.object({
 export const signUpSchema = z
   .object({
     name: z.string().min(3, "Name must be at least 3 characters"),
-    email: z.email("Invalid email address"),
+    email: z.email("Invalid email address").transform((e) => e.trim().toLowerCase()),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z
       .string()
@@ -43,3 +43,13 @@ export const signUpSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+//Schema for emailTokenSchema
+export const emailTokenSchema = z.object({
+  token: z.string().min(1, "token should not be empty"),
+});
+
+// Schema for resending verification email
+export const resendEmailSchema = z.object({
+  email: z.email("Invalid email address").transform((e) => e.trim().toLowerCase()),
+});
