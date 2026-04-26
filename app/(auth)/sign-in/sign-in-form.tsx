@@ -60,11 +60,30 @@ const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
         />
       </div>
 
-      {!!data.message && !data.success && (
-        <p className="text-destructive text-sm text-center font-medium">
-          {data.message}
-        </p>
+      {!!data.message && (
+        <div
+          className={`flex-center gap-2 rounded-xl p-3 border animate-in fade-in zoom-in duration-300 ${
+            data.success
+              ? "bg-primary/5 text-primary border-primary/10"
+              : "bg-destructive/5 text-destructive border-destructive/10"
+          }`}
+        >
+          <span className="text-base font-semibold leading-tight">{data.message}</span>
+        </div>
       )}
+
+      {/* Resend Link Section */}
+      <div className="text-center space-y-2">
+        <p className="text-base text-muted-foreground">
+          Didn&apos;t receive the email?{" "}
+          <Link
+            href="/verify-email/request"
+            className="font-bold text-primary hover:text-accent transition-colors underline-offset-4 hover:underline"
+          >
+            Resend link
+          </Link>
+        </p>
+      </div>
 
       <SubmitButton />
     </form>

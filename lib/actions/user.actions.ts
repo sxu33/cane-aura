@@ -22,6 +22,7 @@ import {
 import { sendVerificationEmail } from "@/lib/email/send-verification-email";
 import {
   GENERIC_VERIFICATION_MSG,
+  SIGNUP_VERIFICATION_SENT_MSG,
   VERIFICATION_COOLDOWN_MS,
   VERIFY_ALREADY_DONE_MSG,
   VERIFY_LINK_INVALID_MSG,
@@ -154,7 +155,7 @@ export async function SignUpUser(_prev: unknown, formdata: FormData) {
     const displayName = name ?? existing?.name ?? "there";
     const r = await issueAndSendVerification({ email, name: displayName });
 
-    return { success: r.ok, message: r.message };
+    return { success: r.ok, message: r.ok ? SIGNUP_VERIFICATION_SENT_MSG : r.message };
   } catch (error) {
     //  throw error when redirect or not found happens
     unstable_rethrow(error);

@@ -4,9 +4,12 @@ export const APP_DESCRIPTION =
   "Authentic handwoven bamboo crafts rooted in centuries-old Chinese heritage. Designed for modern living.";
 export const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
 export const SENDER_EMAIL = process.env.SENDER_EMAIL || "onboarding@resend.dev";
+
 export const GENERIC_VERIFICATION_MSG =
   "If an account exists for this email, a verification link has been sent.";
 
+export const SIGNUP_VERIFICATION_SENT_MSG =
+  "We sent a verification link to your email. Please check your inbox.";
 export const VERIFICATION_COOLDOWN_MS = 60 * 1000;
 export const VERIFY_LINK_INVALID_MSG =
   "This verification link is invalid, has expired, or has already been used. Please request a new verification email from the sign-up page.";
