@@ -43,12 +43,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (user && user.password) {
           const isMatched = compareSync(credentials.password as string, user.password);
 
-          if (isMatched)
+          if (isMatched) {
+            if (!user.emailVerified) {
+              return null;
+            }
             return {
               id: user.id,
               name: user.name,
               email: user.email,
             };
+          }
         }
 
         //if user does not exist or password does not match
