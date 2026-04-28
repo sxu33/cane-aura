@@ -33,7 +33,7 @@ const Menu = ({ session }: { session: Session | null }) => {
       <nav className="md:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button asChild variant="ghost" size="icon" aria-label="Open menu">
+            <Button variant="ghost" size="icon" aria-label="Open menu">
               <EllipsisVertical className="size-5" />
             </Button>
           </SheetTrigger>
