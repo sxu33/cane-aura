@@ -34,8 +34,8 @@ model Product {
 }
 
 model User {
-  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @default("NO_NAME")
+  id   String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String?
 
   email         String    @unique(map: "user_email_idx")
   emailVerified DateTime? @db.Timestamp(6)

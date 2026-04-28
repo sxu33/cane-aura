@@ -183,7 +183,7 @@ export async function ResendVerificationAction(_prev: unknown, formdata: FormDat
     if (!user || user.emailVerified) {
       return { success: true, message: GENERIC_VERIFICATION_MSG };
     }
-    const r = await issueAndSendVerification({ email, name: user.name });
+    const r = await issueAndSendVerification({ email, name: user.name ?? "there" });
     return { success: r.ok, message: r.message };
   } catch (error) {
     unstable_rethrow(error);

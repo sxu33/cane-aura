@@ -23,6 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       credentials: {
@@ -51,6 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               id: user.id,
               name: user.name,
               email: user.email,
+              role: user.role,
             };
           }
         }
@@ -61,18 +63,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      //if user exists, set token sub to user id or remain
+    async jwt({ token, user, trigger, session }) {
+      //assign the user fields to token
 
       if (user) {
         token.sub = user.id ?? token.sub;
+        token.email = user.email ?? token.email;
+        token.role = user.role ?? token.role;
+        token.name = user.name ?? token.name;
+
+        const rawName = user.name?.trim() ?? "";
+        const fallbackName = user.email ? user.email.split("@")[0] : "User";
+
+        token.name = rawName ? rawName : fallbackName;
       }
+
+      if (trigger === "update" && session?.name) {
+        token.name = session.name;
+      }
+
       return token;
     },
 
     async session({ session, user, trigger, token }) {
       // if token's sub exists, set the user ID in the session to the token's sub
       if (token.sub) session.user.id = token.sub;
+      if (token.name) session.user.name = token.name;
+      if (token.email) session.user.email = token.email;
+      if (token.role) session.user.role = token.role;
 
       return session;
     },
