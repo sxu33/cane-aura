@@ -44,7 +44,7 @@ const SignInForm = ({ callbackUrl }: { callbackUrl: string }) => {
         <div className="flex justify-between">
           <Label htmlFor="password">Password</Label>
           <Link
-            href="/forgot-password"
+            href="/forgot-password/request"
             className="text-xs font-bold text-primary hover:underline"
           >
             Forgot Password?
