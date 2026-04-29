@@ -4,6 +4,7 @@ import {
   signInSchema,
   signUpSchema,
   emailTokenSchema,
+  resetPasswordSchema,
 } from "../validators";
 import { signIn, signOut } from "@/auth";
 import { AuthError } from "next-auth";
@@ -19,6 +20,7 @@ import {
   deleteVerificationTokensByEmail,
   hasRecentVerificationToken,
 } from "@/data/verification-token";
+
 import { sendVerificationEmail } from "@/lib/email/send-verification-email";
 import {
   GENERIC_VERIFICATION_MSG,
@@ -30,11 +32,46 @@ import {
   VERIFY_SUCCESS_MSG,
 } from "../constants";
 import { getUserByEmail } from "@/data/user";
+import {
+  createPasswordResetTokenForEmail,
+  getPasswordResetTokenByToken,
+  hasRecentPasswordResetToken,
+} from "@/data/reset-password-tokens";
+import { sendPasswordResetEmail } from "../email/send-password-reset-email";
 
 const getRedirectTo = (formdata: FormData) => {
   const rawCallback = formdata.get("callbackUrl");
   return getSafeCallbackUrl(typeof rawCallback === "string" ? rawCallback : null);
 };
+
+async function issueAndSendPasswordResetEmail({
+  email,
+  name,
+}: {
+  email: string;
+  name: string;
+}) {
+  const tooSoon = await hasRecentPasswordResetToken(email, VERIFICATION_COOLDOWN_MS);
+  if (tooSoon) {
+    return { ok: true as const, message: GENERIC_VERIFICATION_MSG };
+  }
+
+  const { rawToken } = await createPasswordResetTokenForEmail(email);
+  const { error } = await sendPasswordResetEmail({
+    to: email,
+    name: name,
+    token: rawToken,
+  });
+  if (error) {
+    console.error(error);
+    return {
+      ok: false as const,
+      message: "Failed to send email. Please try again later.",
+    };
+  }
+
+  return { ok: true as const, message: GENERIC_VERIFICATION_MSG };
+}
 
 async function issueAndSendVerification({
   email,
@@ -240,6 +277,111 @@ export async function verifyEmailTokenAction(rawToken: string | undefined) {
     }),
   ]);
   return { success: true, message: VERIFY_SUCCESS_MSG };
+}
+
+//handle reset password request
+export async function RequestPasswordResetAction(_prev: unknown, formdata: FormData) {
+  try {
+    const data = Object.fromEntries(formdata.entries());
+    const parsed = resendEmailSchema.safeParse(data);
+    if (!parsed.success) {
+      return {
+        success: false,
+        message: parsed.error.issues[0]?.message ?? "Invalid email",
+      };
+    }
+    const email = parsed.data.email;
+    const user = await prisma.user.findFirst({ where: { email } });
+    // If no user or OAuth-only (no password), return generic message; else send password reset email.
+    if (!user || !user.password) {
+      return { success: true, message: GENERIC_VERIFICATION_MSG };
+    }
+    const r = await issueAndSendPasswordResetEmail({
+      email,
+      name: user.name ?? "there",
+    });
+    return { success: r.ok, message: r.message };
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error(error);
+    return {
+      success: false,
+      message: "We couldn't complete your request. Please try again",
+    };
+  }
+}
+
+// Validate reset-password token from URL before showing the form.
+export async function verifyResetPasswordTokenAction(rawToken: string | undefined) {
+  const parsed = emailTokenSchema.safeParse({ token: rawToken });
+  if (!parsed.success) {
+    return { success: false, message: VERIFY_LINK_MISSING_MSG };
+  }
+  const record = await getPasswordResetTokenByToken(parsed.data.token);
+  if (!record || record.expires < new Date()) {
+    return { success: false, message: VERIFY_LINK_INVALID_MSG };
+  }
+  const user = await prisma.user.findUnique({
+    where: { email: record.identifier },
+  });
+  if (!user || !user.password) {
+    return { success: false, message: VERIFY_LINK_INVALID_MSG };
+  }
+  return {
+    success: true,
+    message: "Choose a new password for your account.",
+  };
+}
+
+export async function ResetPasswordAction(_prev: unknown, formdata: FormData) {
+  try {
+    const data = Object.fromEntries(formdata.entries());
+    const parsed = resetPasswordSchema.safeParse(data);
+    if (!parsed.success) {
+      const message = [
+        ...new Set(parsed.error.issues.map((issue) => issue.message)),
+      ].join("\n");
+      return {
+        success: false,
+        message: message || "Invalid input",
+      };
+    }
+
+    const { token, password } = parsed.data;
+    const record = await getPasswordResetTokenByToken(token);
+    if (!record || record.expires < new Date()) {
+      return { success: false, message: VERIFY_LINK_INVALID_MSG };
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: record.identifier },
+    });
+    if (!user || !user.password) {
+      return { success: false, message: VERIFY_LINK_INVALID_MSG };
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { email: user.email },
+        data: { password: hashSync(password, 10) },
+      }),
+      prisma.passwordResetToken.deleteMany({
+        where: { identifier: user.email },
+      }),
+    ]);
+
+    return {
+      success: true,
+      message: "Your password has been reset. You can sign in now.",
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error(error);
+    return {
+      success: false,
+      message: "We couldn't complete your request. Please try again",
+    };
+  }
 }
 
 // sign user in with google
