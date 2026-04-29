@@ -47,10 +47,25 @@ export const signUpSchema = z
 
 //Schema for emailTokenSchema
 export const emailTokenSchema = z.object({
-  token: z.string().min(1, "token should not be empty"),
+  token: z.string().trim().min(1, "Token must not be empty"),
 });
 
 // Schema for resending verification email
 export const resendEmailSchema = z.object({
   email: z.email("Invalid email address").transform((e) => e.trim().toLowerCase()),
 });
+
+//Schema for reset password token, new password
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().trim().min(1, "Token must not be empty"),
+    password: z.string().trim().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .trim()
+      .min(6, "Confirm password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
